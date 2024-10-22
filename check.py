@@ -45,8 +45,3 @@ def create_mac(price):
 
     return mac
 
-def get_product_by_id(products_list, product_id):
-    for product in products_list:
-        if product['id'] == int(product_id):
-            return product
-    return None

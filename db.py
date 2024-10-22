@@ -159,6 +159,7 @@ def add_product(conn,data):
     cur.execute(quary,(data['name'],data['price'],data['amout'],data['photo'],data['text'],data['type']))
     conn.commit()
 
+
 def get_product(conn):
     cur=conn.cursor()
     quary="SELECT * FROM products"
@@ -257,24 +258,22 @@ def get_comments_for_product(connection, product_id):
 
 def add_request(conn,request):
     cur=conn.cursor()
-    quary="INSERT INTO requests (userId,productId,quantity) VALUES (?,?,?)"
+    quary="INSERT INTO requests (user_id,product_id,quantity) VALUES (?,?,?)"
     cur.execute(quary,(request['userId'],request['productId'],request['quantity']))
     conn.commit()
 
-def get_request_id(conn,id):
-    cur=conn.cursor()
-    quary="SELECT * FROM requests WHERE id=?"
-    cur.execute(quary,(id,))
-    return cur.fetchone()
 
-def update_request(conn,requestNewQuantity,id):
-    cur=conn.cursor()
-    quary="UPDATE requests SET quantity=? WHERE id=?"
-    cur.execute(quary,(requestNewQuantity,id))
-    conn.commit()
+
+def get_request_id(conn, id):
+    cur = conn.cursor()
+    query = "SELECT products.*,requests.quantity FROM requests JOIN products ON requests.product_id = products.id WHERE requests.user_id = ?"
+    cur.execute(query, (id,))
+    return cur.fetchall()
+
+
 
 def delete_request(conn,id):
     cur=conn.cursor()
-    quary="DELETE FROM requests WHERE id=?"
+    quary="DELETE FROM requests WHERE product_id=?"
     cur.execute(quary,(id,))
     conn.commit()

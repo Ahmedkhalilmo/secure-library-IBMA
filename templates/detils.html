@@ -56,12 +56,13 @@
                 <div style="color:white;" class="pname">{{ id[1] }}</div>
                 <div style="color:white;" class="price">{{ id[6] }}</div>
                 <div style="color:white;" class="price">${{ id[3] }}</div>
-                <div class="quantity">
-                    <p style="color:white;" >Quantity : 1 </p>
-                </div>
-                <div class="btn-box">
-                    <button class="cart-btn" ><a href="{{url_for('add_to_cart',id0=id[0])}}" >Add to Cart</a></button>
-                </div>
+                <form action="{{url_for('add_to_cart',id0=id[0])}}" method="POST">
+                             <p style="color:white;" >Quantity : </p>
+                             <input type="number" name="quantity" value=1 >
+                            <button type="submit" class="button-56">Add to Cart</button>
+                </form>
+
+
                 <div class="pname" style="color: #cccccc">{{ id[5] }}</div>
 
             </div>

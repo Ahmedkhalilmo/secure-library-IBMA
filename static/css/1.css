@@ -397,3 +397,68 @@ h1 {
 .submit-btn:hover {
     background-color: rgba(255, 102, 0, 1);
 }
+
+.profile_M {
+    margin: 50px auto;
+    margin-top: 120px;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    max-width: 800px;
+    display: flex;
+    align-items: center;
+}
+
+.acount_picture {
+    flex: 1;
+    text-align: center;
+}
+
+.acount_picture img {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.acount_picture input[type="file"] {
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+.acount_details {
+    flex: 2;
+    margin-left: 30px;
+}
+
+.acount_details label {
+    font-size: 16px;
+    color: #555;
+}
+
+.acount_details input[type="text"], .acount_details input[type="email"], .acount_details input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.btnpro {
+    padding: 10px;
+    background-color: rgba(255, 102, 0, 0.8);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-top: 20px;
+}
+
+.btnpro:hover {
+    background-color: rgba(255, 102, 0, 1);
+}

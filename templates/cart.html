@@ -50,10 +50,10 @@
                 <div class="col-md-4">
                     <div class="card0 mb-4">
                         <div class="card0-body">
-                            <h5 class="card0-title">{{ item.prodcut_name }}</h5>
-                            <p class="card0-text">Price: ${{ item.price }}</p>
-                            <p class="card0-text">Quantity: {{ item.quantity }}</p>
-                            <a href="{{ url_for('checkout', product_id=item.product_id, name=item.prodcut_name, price=item.price) }}" class="btn0 btn-primary mt-4">
+                            <h5 class="card0-title">{{ item[1] }}</h5>
+                            <p class="card0-text">Price: ${{ item[3]*item[7] }}</p>
+                            <p class="card0-text">Quantity: {{ item[7] }}</p>
+                            <a href="{{ url_for('checkout', product_id=item[0], name=item[1], price=item[3], quantity=item[7] )}}" class="btn0 btn-primary mt-4">
                                 Checkout This Item
                             </a>
                         </div>

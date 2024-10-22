@@ -51,12 +51,14 @@
                     <div class="card0-body">
                         <h5 class="card0-title">Product Name: {{ name }}</h5>
                         <p class="card0-text">Product ID: {{ product_id }}</p>
-                        <p class="card0-text">Price: ${{ price }}</p>
+                        <p class="card0-text">Price: ${{ price   }}</p>
+                        <p class="card0-text">quantity: {{ quantity   }}</p>
                         <!-- Optionally, include a form to confirm the purchase -->
                         <form action="{{ url_for('confirm_purchase') }}" method="POST">
                             <input type="hidden" name="product_id" value="{{ product_id }}">
                             <input type="hidden" name="name" value="{{ name }}">
                             <input type="hidden" name="price" value="{{ price }}">
+                            <input type="hidden" name="quantity" value="{{ quantity }}">
                             <button type="submit" class="button-56">Confirm Purchase</button>
                         </form>
                     </div>

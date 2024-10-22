@@ -1,3 +1,4 @@
+from Tools.scripts.make_ctype import method
 from flask import Flask, render_template, request, redirect, url_for, session, flash ,abort
 import db
 import os
@@ -44,6 +45,8 @@ def index():
 @app.route('/signin', methods=['GET', 'POST'])
 @limiter.limit("10 per minute")
 def signin():
+    if "username" in session:
+        return redirect(url_for('index'))
     if request.method == 'POST':
         username = escape(request.form['username'])
         password = request.form['password']
@@ -179,19 +182,16 @@ def detils(id):
     return render_template('detils.html', id=idd, comments=comments,user=user)
 
 
-@app.route('/add_to_cart/<id0>')
+@app.route('/add_to_cart/<id0>', methods=['GET', 'POST'])
 def add_to_cart(id0):
-    product = db.get_product_id(connection,id0)
-
-    
+    user = db.get_user(connection, session['username'])
+    product=db.get_product_id(connection,id0)
+    quantity = request.form['quantity']
+    data={'userId':user[0],'productId':id0,'quantity':quantity}
+    db.add_request(connection,data)
     if 'username' not in session:
         flash("You must be logged in to add items to your cart.", "warning")
         return redirect(url_for('signin'))
-
-    
-    cart = session.get('cart', [])
-    cart.append({'product_id': product[0], 'prodcut_name': product[1], 'price': product[3], 'quantity': 1})
-    session['cart'] = cart
 
     flash(f"Added product {product[0]} with price {product[3]} to your cart.", "success")
     return redirect(url_for('index'))
@@ -199,7 +199,8 @@ def add_to_cart(id0):
 
 @app.route('/cart')
 def cart():
-    cart = session.get('cart', [])
+    user = db.get_user(connection, session['username'])
+    cart = db.get_request_id(connection,user[0])
     
     if 'username' not in session:
         flash("You must be logged in to add items to your cart.", "danger")
@@ -216,10 +217,12 @@ def checkout():
     product_id = request.args.get('product_id')
     name = request.args.get('name')
     price = request.args.get('price')
+    quantity = request.args.get('quantity')
+    newprice = int(price) * int(quantity)
     product=db.get_product_id(connection,product_id)
-    session['Correct_MAC'] = check.create_mac(product[3])
+    session['Correct_MAC'] = check.create_mac(product[3]*int(quantity))
     user = db.get_user(connection, session['username'])
-    return render_template('checkout.html', product_id=product_id, name=name, price=price, user=user)
+    return render_template('checkout.html', product_id=product_id, name=name, price=newprice, user=user,quantity=quantity)
 
 
 @app.route('/confirm_purchase', methods=['POST'])
@@ -228,17 +231,23 @@ def confirm_purchase():
         return redirect(url_for('index'))
     product_id = request.form['product_id']
     price = request.form['price']
+
+    quantity = request.form['quantity']
+
     product=db.get_product_id(connection,product_id)
     username=session['username']
     user=db.get_user(connection,username)
     Possible_Correct_MAC = check.create_mac(price)
     if 'Correct_MAC' in session and session['Correct_MAC'] == Possible_Correct_MAC:
+        amount = product[2]- int(quantity)
+
         money=int(user[7])-int(price)
-        if money>=0:
+
+        if money>=0 :
             flash(f"Purchase confirmed at price ${price}.",'success')
             db.update_wallet(connection,user[0],money)
-            session.pop('cart',None)
-            db.update_amount(connection,product[0],int(product[2])-1)
+            db.delete_request(connection,product_id)
+            db.update_amount(connection,product[0],amount)
             return redirect(url_for('index'))
         else:
             flash("Sorry there is not enough Money",'danger')
@@ -298,10 +307,12 @@ def search():
 @app.route('/profile', methods=['GET', 'POST',])
 def profile():
     if 'username' in session:
+        if session['username']=='admin':
+            return redirect(url_for('index'))
         if request.method == 'GET':
             username = request.args.get('username', session['username'])
             if username != session['username']:
-                return redirect(url_for('login'))
+                return redirect(url_for('signin'))
             user = db.get_user(connection, username)
             return render_template('profile.html', user=user)
         
@@ -309,7 +320,7 @@ def profile():
             form_type = request.form.get('form_name')
             username = request.args.get('username', session['username'])
             if username != session['username']:
-               return redirect(url_for('login'))
+                return redirect(url_for('signin'))
             
 
             if form_type == 'upload_photo':
@@ -334,7 +345,7 @@ def profile():
             user = db.get_user(connection, username)
             return render_template('profile.html', user=user) 
     else:
-        return redirect(url_for('login'))
+        return redirect(url_for('signin'))
 
 
 
