@@ -270,10 +270,19 @@ def get_request_id(conn, id):
     cur.execute(query, (id,))
     return cur.fetchall()
 
+def search_product(conn, id,id0):
+    cur = conn.cursor()
+    query = "SELECT * FROM requests  WHERE user_id = ? AND product_id = ?"
+    cur.execute(query, (id,id0))
+    return cur.fetchone()
+def update_request_id(conn, quantity, id):
+    cur = conn.cursor()
+    query = "UPDATE requests SET quantity = ? WHERE product_id = ?"
+    cur.execute(query, (quantity, id))
+    conn.commit()
 
-
-def delete_request(conn,id):
+def delete_request(conn,id,user):
     cur=conn.cursor()
-    quary="DELETE FROM requests WHERE product_id=?"
-    cur.execute(quary,(id,))
+    quary="DELETE FROM requests WHERE product_id=? AND user_id= ?"
+    cur.execute(quary,(id,user))
     conn.commit()

@@ -184,14 +184,20 @@ def detils(id):
 
 @app.route('/add_to_cart/<id0>', methods=['GET', 'POST'])
 def add_to_cart(id0):
+    if 'username' not in session:
+        flash("You must be logged in to add items to your cart.", "warning")
+        return redirect(url_for('signin'))
     user = db.get_user(connection, session['username'])
     product=db.get_product_id(connection,id0)
     quantity = request.form['quantity']
     data={'userId':user[0],'productId':id0,'quantity':quantity}
-    db.add_request(connection,data)
-    if 'username' not in session:
-        flash("You must be logged in to add items to your cart.", "warning")
-        return redirect(url_for('signin'))
+    cart = db.search_product(connection, user[0],id0)
+
+    if cart:
+        db.update_request_id(connection,cart[3]+ int(quantity), id0)
+    else :
+        db.add_request(connection,data)
+
 
     flash(f"Added product {product[0]} with price {product[3]} to your cart.", "success")
     return redirect(url_for('index'))
@@ -201,7 +207,7 @@ def add_to_cart(id0):
 def cart():
     user = db.get_user(connection, session['username'])
     cart = db.get_request_id(connection,user[0])
-    
+
     if 'username' not in session:
         flash("You must be logged in to add items to your cart.", "danger")
         return redirect(url_for('signin'))
@@ -246,7 +252,7 @@ def confirm_purchase():
         if money>=0 :
             flash(f"Purchase confirmed at price ${price}.",'success')
             db.update_wallet(connection,user[0],money)
-            db.delete_request(connection,product_id)
+            db.delete_request(connection,product_id,user[0])
             db.update_amount(connection,product[0],amount)
             return redirect(url_for('index'))
         else:
